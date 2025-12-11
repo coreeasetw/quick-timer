@@ -10,42 +10,29 @@
 </head>
 <body>
   <div id="timer">
-    <div class="flip-clock" aria-live="polite">
-      <div class="flip-group" data-label="MIN">
-        <div class="flip-digit" data-digit="minutes-tens" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
+    <div class="split-clock" aria-live="polite">
+      <div class="time-block" data-label="MIN">
+        <div class="split-digit" data-digit="minutes-tens" data-value="0">
+          <div class="segment top"><span class="value">0</span></div>
+          <div class="segment bottom"><span class="value">0</span></div>
         </div>
-        <div class="flip-digit" data-digit="minutes-ones" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
+        <div class="split-digit" data-digit="minutes-ones" data-value="0">
+          <div class="segment top"><span class="value">0</span></div>
+          <div class="segment bottom"><span class="value">0</span></div>
         </div>
       </div>
-      <span class="separator">:</span>
-      <div class="flip-group" data-label="SEC">
-        <div class="flip-digit" data-digit="seconds-tens" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
+      <div class="separator" aria-hidden="true">
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="time-block" data-label="SEC">
+        <div class="split-digit" data-digit="seconds-tens" data-value="0">
+          <div class="segment top"><span class="value">0</span></div>
+          <div class="segment bottom"><span class="value">0</span></div>
         </div>
-        <div class="flip-digit" data-digit="seconds-ones" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
+        <div class="split-digit" data-digit="seconds-ones" data-value="0">
+          <div class="segment top"><span class="value">0</span></div>
+          <div class="segment bottom"><span class="value">0</span></div>
         </div>
       </div>
     </div>

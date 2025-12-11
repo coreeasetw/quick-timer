@@ -42,41 +42,24 @@ var show = function(){
   return $('.fbtn').css('opacity', isShow ? '1.0' : '0.1');
 };
 
-var setDigitInstant = function(digit, value){
+var setDigitInstant = function(digit, value, animate){
+  if (animate == null) {
+    animate = true;
+  }
   if (!digit) {
     return;
   }
   digit.dataset.value = value;
-  digit.classList.remove('play');
-  digit.querySelector('.top').textContent = value;
-  digit.querySelector('.bottom').textContent = value;
-  digit.querySelector('.top.next').textContent = value;
-  digit.querySelector('.bottom.next').textContent = value;
-};
-
-var flipDigit = function(digit, value){
-  var current, top, bottom, topNext, bottomNext, onFlipEnd;
-  if (!digit) {
-    return;
+  digit.querySelectorAll('.value').forEach(function(node){
+    return node.textContent = value;
+  });
+  if (animate) {
+    digit.classList.remove('pulse');
+    void digit.offsetWidth;
+    return digit.classList.add('pulse');
+  } else {
+    return digit.classList.remove('pulse');
   }
-  current = parseInt(digit.dataset.value || '0', 10);
-  if (current === value) {
-    return;
-  }
-  top = digit.querySelector('.top');
-  bottom = digit.querySelector('.bottom');
-  topNext = digit.querySelector('.top.next');
-  bottomNext = digit.querySelector('.bottom.next');
-  topNext.textContent = value;
-  bottomNext.textContent = value;
-  digit.classList.remove('play');
-  void digit.offsetWidth;
-  digit.classList.add('play');
-  onFlipEnd = function(){
-    setDigitInstant(digit, value);
-    return bottom.removeEventListener('animationend', onFlipEnd);
-  };
-  bottom.addEventListener('animationend', onFlipEnd);
 };
 
 var setDigits = function(ms, animate){
@@ -93,16 +76,16 @@ var setDigits = function(ms, animate){
   values = [Math.floor(minutes / 10), minutes % 10, Math.floor(seconds / 10), seconds % 10];
   idx = ['minutesTens', 'minutesOnes', 'secondsTens', 'secondsOnes'];
   return idx.forEach(function(key, i){
-    var digit;
+    var digit, nextValue;
     digit = digitMap[key];
+    nextValue = values[i];
     if (!digit) {
       return;
     }
-    if (animate) {
-      return flipDigit(digit, values[i]);
-    } else {
-      return setDigitInstant(digit, values[i]);
+    if (animate && parseInt(digit.dataset.value || '0', 10) === nextValue) {
+      return;
     }
+    return setDigitInstant(digit, nextValue, animate);
   });
 };
 
