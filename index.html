@@ -9,61 +9,38 @@
   <script type="text/javascript" src="index.js"></script>
 </head>
 <body>
-  <div id="timer">
-    <div class="flip-clock" aria-live="polite">
-      <div class="flip-group" data-label="MIN">
-        <div class="flip-digit" data-digit="minutes-tens" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
-        </div>
-        <div class="flip-digit" data-digit="minutes-ones" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
-        </div>
+  <div class="layout">
+    <div id="timer" class="progress-timer" aria-live="polite">
+      <div class="time-display">
+        <span id="time-text">01:00</span>
       </div>
-      <span class="separator">:</span>
-      <div class="flip-group" data-label="SEC">
-        <div class="flip-digit" data-digit="seconds-tens" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
-        </div>
-        <div class="flip-digit" data-digit="seconds-ones" data-value="0">
-          <div class="card">
-            <span class="card-face top">0</span>
-            <span class="card-face bottom">0</span>
-            <span class="card-face top next">0</span>
-            <span class="card-face bottom next">0</span>
-          </div>
+      <div class="progress-wrapper">
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" aria-label="Remaining time">
+          <div class="progress-fill" id="progress-fill"></div>
         </div>
       </div>
     </div>
+    <div class="controls">
+      <div class="control-row">
+        <a class="btn btn-info fbtn" id="min60" onclick="adjust(-60)">-60</a>
+        <a class="btn btn-info fbtn" id="min10" onclick="adjust(-10)">-10</a>
+        <a class="btn btn-primary" id="toggle" onclick="toggle()">RUN</a>
+        <a class="btn btn-warning" id="reset" onclick="reset()">RESET</a>
+        <a class="btn btn-default" id="hide" onclick="show()">&#xd60;</a>
+        <a class="btn btn-info fbtn" id="add10" onclick="adjust(10)">+10</a>
+        <a class="btn btn-info fbtn" id="add60" onclick="adjust(60)">+60</a>
+      </div>
+      <div class="preset-row">
+        <a class="btn btn-success fbtn" id="def10" onclick="adjust(0,10)">10 sec</a>
+        <a class="btn btn-success fbtn" id="def30" onclick="adjust(0,30)">30 sec</a>
+        <a class="btn btn-success fbtn" id="def60" onclick="adjust(0,60)">1 min</a>
+        <a class="btn btn-success fbtn" id="def180" onclick="adjust(0,180)">3 min</a>
+        <a class="btn btn-success fbtn" id="def300" onclick="adjust(0,300)">5 min</a>
+        <a class="btn btn-success fbtn" id="def600" onclick="adjust(0,600)">10 min</a>
+        <a class="btn btn-success fbtn" id="def900" onclick="adjust(0,900)">15 min</a>
+        <a class="btn btn-success fbtn" id="def1800" onclick="adjust(0,1800)">30 min</a>
+      </div>
+    </div>
   </div>
-  <a class="btn btn-info fbtn" id="min60" onclick="adjust(-60)">-60</a>
-  <a class="btn btn-info fbtn" id="min10" onclick="adjust(-10)">-10</a>
-  <a class="btn btn-primary" id="toggle" onclick="toggle()">RUN</a>
-  <a class="btn btn-warning" id="reset" onclick="reset()">RESET</a>
-  <a class="btn btn-default" id="hide" onclick="show()">&#xd60;</a>
-  <a class="btn btn-info fbtn" id="add10" onclick="adjust(10)">+10</a>
-  <a class="btn btn-info fbtn" id="add60" onclick="adjust(60)">+60</a>
-  <a class="btn btn-success fbtn" id="def10" onclick="adjust(0,10)">10 sec</a>
-  <a class="btn btn-success fbtn" id="def30" onclick="adjust(0,30)">30 sec</a>
-  <a class="btn btn-success fbtn" id="def60" onclick="adjust(0,60)">1 min</a>
-  <a class="btn btn-success fbtn" id="def180" onclick="adjust(0,180)">3 min</a>
-  <a class="btn btn-success fbtn" id="def300" onclick="adjust(0,300)">5 min</a>
-  <a class="btn btn-success fbtn" id="def600" onclick="adjust(0,600)">10 min</a>
-  <a class="btn btn-success fbtn" id="def900" onclick="adjust(0,900)">15 min</a>
-  <a class="btn btn-success fbtn" id="def1800" onclick="adjust(0,1800)">30 min</a>
 </body>
 </html>
