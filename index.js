@@ -20,15 +20,32 @@ var newAudio = function(file){
   node = new Audio();
   node.src = file;
   node.loop = false;
+  node.preload = 'auto';
   node.load();
+  node.style.display = 'none';
   document.body.appendChild(node);
   return node;
 };
 
+var safePlay = function(des){
+  var promise;
+  if (!des) {
+    return;
+  }
+  promise = des.play();
+  if (promise && typeof promise.catch === 'function') {
+    promise.catch(function(){});
+  }
+  return des;
+};
+
 var soundToggle = function(des, state){
   var x$;
+  if (!des) {
+    return;
+  }
   if (state) {
-    return des.play();
+    return safePlay(des);
   } else {
     x$ = des;
     x$.currentTime = 0;
