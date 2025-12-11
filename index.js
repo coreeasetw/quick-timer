@@ -1,4 +1,4 @@
-var start, isBlink, isLight, isRun, isShow, isWarned, handler, latency, stopBy, delay, audioRemind, audioEnd, digitMap;
+var start, isBlink, isLight, isRun, isShow, isWarned, handler, latency, stopBy, delay, totalDuration, audioRemind, audioEnd;
 start = null;
 isBlink = false;
 isLight = true;
@@ -9,10 +9,10 @@ handler = null;
 latency = 0;
 stopBy = null;
 delay = 60000;
+totalDuration = delay;
 audioRemind = null;
 audioEnd = null;
-digitMap = {};
-var BASE_COLOR = '#dff8ff';
+var BASE_COLOR = '#b25f00';
 var ALERT_COLOR = '#ff6b6b';
 
 var newAudio = function(file){
@@ -42,67 +42,33 @@ var show = function(){
   return $('.fbtn').css('opacity', isShow ? '1.0' : '0.1');
 };
 
-var setDigitInstant = function(digit, value){
-  digit.dataset.value = value;
-  digit.querySelector('.top').textContent = value;
-  digit.querySelector('.bottom').textContent = value;
-  digit.querySelector('.top.next').textContent = value;
-  digit.querySelector('.bottom.next').textContent = value;
+var formatDigits = function(value){
+  return value < 10 ? "0" + value : "" + value;
 };
 
-var flipDigit = function(digit, value){
-  var current, top, bottom, topNext, bottomNext;
-  current = parseInt(digit.dataset.value || '0', 10);
-  if (current === value) {
-    return;
-  }
-  top = digit.querySelector('.top');
-  bottom = digit.querySelector('.bottom');
-  topNext = digit.querySelector('.top.next');
-  bottomNext = digit.querySelector('.bottom.next');
-  topNext.textContent = value;
-  bottomNext.textContent = value;
-  digit.classList.remove('play');
-  void digit.offsetWidth;
-  digit.classList.add('play');
-  digit.addEventListener('animationend', function handler(){
-    digit.dataset.value = value;
-    top.textContent = value;
-    bottom.textContent = value;
-    digit.classList.remove('play');
-    digit.removeEventListener('animationend', handler);
-  });
-};
-
-var setDigits = function(ms, animate){
-  var safe, minutes, seconds, values, idx;
-  if (animate == null) {
-    animate = true;
-  }
-  safe = Math.max(0, Math.ceil(ms / 1000));
-  minutes = Math.floor(safe / 60);
-  seconds = safe % 60;
-  if (minutes > 99) {
-    minutes = 99;
-  }
-  values = [Math.floor(minutes / 10), minutes % 10, Math.floor(seconds / 10), seconds % 10];
-  idx = ['minutesTens', 'minutesOnes', 'secondsTens', 'secondsOnes'];
-  return idx.forEach(function(key, i){
-    var digit;
-    digit = digitMap[key];
-    if (!digit) {
-      return;
-    }
-    if (animate) {
-      return flipDigit(digit, values[i]);
-    } else {
-      return setDigitInstant(digit, values[i]);
-    }
-  });
+var updateDisplay = function(ms){
+  var safe, minutes, seconds, hundredths, percent, clamped;
+  safe = Math.max(0, ms);
+  minutes = Math.floor(safe / 60000);
+  seconds = Math.floor((safe % 60000) / 1000);
+  hundredths = Math.floor((safe % 1000) / 10);
+  $('#time-text').text(formatDigits(minutes) + '.' + formatDigits(seconds) + '.' + formatDigits(hundredths));
+  clamped = totalDuration > 0 ? Math.max(0, Math.min(totalDuration, safe)) : 0;
+  percent = totalDuration > 0 ? Math.max(0, Math.min(100, (clamped / totalDuration) * 100)) : 0;
+  $('#progress-fill').css('width', percent + '%');
+  $('#progress-indicator').css('left', percent + '%');
+  return $('.progress-track').attr('aria-valuenow', percent.toFixed(0));
 };
 
 var updateColors = function(color){
-  return $('#timer').css('color', color);
+  $('#timer').css('--accent-color', color);
+  $('#progress-fill').css('--accent-color', color);
+  $('#time-text').css('color', color);
+  $('#progress-indicator').css({
+    borderColor: color,
+    color: color
+  });
+  return $('#progress-fill').css('background', isBlink ? 'linear-gradient(90deg, rgba(255, 107, 107, 0.2), ' + ALERT_COLOR + ')' : 'linear-gradient(90deg, rgba(255, 235, 59, 0.28), #ffb300)');
 };
 
 var adjust = function(it, v){
@@ -116,7 +82,8 @@ var adjust = function(it, v){
   if (delay <= 0) {
     delay = 0;
   }
-  setDigits(delay, false);
+  totalDuration = Math.max(delay, 1000);
+  updateDisplay(delay);
   return resize();
 };
 
@@ -149,6 +116,7 @@ var reset = function(){
   isBlink = false;
   latency = 0;
   start = null;
+  totalDuration = delay;
   isRun = true;
   toggle();
   if (handler) {
@@ -156,13 +124,14 @@ var reset = function(){
   }
   handler = null;
   updateColors(BASE_COLOR);
-  setDigits(delay, false);
+  updateDisplay(delay);
   return resize();
 };
 
 var blink = function(){
   isBlink = true;
   isLight = !isLight;
+  $('#progress-fill').toggleClass('alert');
   return updateColors(isLight ? BASE_COLOR : ALERT_COLOR);
 };
 
@@ -188,8 +157,7 @@ var count = function(){
       return blink();
     }, 500);
   }
-  setDigits(diff);
-  return resize();
+  return updateDisplay(diff);
 };
 
 var run = function(){
@@ -197,6 +165,7 @@ var run = function(){
     start = new Date();
     latency = 0;
     isBlink = false;
+    totalDuration = Math.max(delay, 1000);
   }
   if (handler) {
     clearInterval(handler);
@@ -213,26 +182,17 @@ var run = function(){
 };
 
 var resize = function(){
-  var w, h, size, gap;
+  var w, h, size;
   w = $(window).width();
   h = $(window).height();
-  size = Math.min(w / 6, h * 0.55);
-  gap = size * 0.08;
-  $('#timer').css('--digit-size', size + "px");
-  return $('#timer').css('--gap-size', gap + "px");
-};
-
-var prepareDigits = function(){
-  digitMap.minutesTens = document.querySelector('[data-digit="minutes-tens"]');
-  digitMap.minutesOnes = document.querySelector('[data-digit="minutes-ones"]');
-  digitMap.secondsTens = document.querySelector('[data-digit="seconds-tens"]');
-  digitMap.secondsOnes = document.querySelector('[data-digit="seconds-ones"]');
-  return setDigits(delay, false);
+  size = Math.min(w, h) * 0.12;
+  $('#time-text').css('font-size', Math.max(48, size) + 'px');
+  return $('.progress-track').css('height', Math.max(12, size * 0.25) + 'px');
 };
 
 window.onload = function(){
-  prepareDigits();
   resize();
+  updateDisplay(delay);
   audioRemind = newAudio('audio/smb_warning.mp3');
   return audioEnd = newAudio('audio/smb_mariodie.mp3');
 };
